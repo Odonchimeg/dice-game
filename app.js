@@ -1,16 +1,16 @@
-//Тоглогчийн ээлжийг хадгалах
-var activePlayer = 0;
+//Хэний ээлж вэ?
+var activePlayer;
 
+//Ээжлийн оноо
+var roundScore;
 
 //Тоглогчийн оноог хадгалах
-var scores = [0, 0];
-
-//Тоглогчийн ээжлийн оноог хадгалах
-var roundScore = 0;
+var scores;
 
 //dice object in DOM ()
 var diceDom = document.querySelector(".dice");
 
+//ТОглоомыг эхлүүлнэ
 resetGame();
 
 
@@ -32,18 +32,9 @@ document.querySelector(".btn-roll").addEventListener("click", function () {
         roundScore += diceNumber;
         document.getElementById("current-" + activePlayer).textContent = roundScore;
 
-        if (scores[activePlayer] + roundScore > 99) {
-
-            refreshScore();
-
-            diceDom.style.display = "none";
-            document.getElementById("name-" + activePlayer).textContent = " WON !!!!";
-        }
-
-
     } else {
         //ээлжийг сольно
-        changeRound();
+        switchToNextPlayer();
     }
 
     console.log(diceNumber);
@@ -51,19 +42,35 @@ document.querySelector(".btn-roll").addEventListener("click", function () {
 });
 
 document.querySelector(".btn-hold").addEventListener("click", function () {
-    changeRound();
+
+    // active player-ийн нийт оноог хадгалаад, дэлгэцэнд харуулна
+    scores[activePlayer] += roundScore;
+    document.getElementById("score-" + activePlayer).textContent = scores[activePlayer];
+
+    //Тоглогч хожсон эсэхийг шалгах
+    if (scores[activePlayer] >= 100) {
+
+        diceDom.style.display = "none";
+        document.getElementById("name-" + activePlayer).textContent = " WON !!!!";
+        document.querySelector(".player-" + activePlayer + "-panel").classList.add("winner");
+        document.querySelector(".player-" + activePlayer + "-panel").classList.remove("active");
+    } else
+        switchToNextPlayer();
+
 });
 
 document.querySelector(".btn-new").addEventListener("click", function () {
 
-    document.getElementById("name-" + activePlayer).textContent = "Player " + activePlayer+1;
-
     resetGame();
+    
 });
 
-function changeRound() {
+//тогло ээлжийг дараагийн тоглогч руу шилжүүлнэ
+function switchToNextPlayer() {
 
-    refreshScore();
+    //active player-ийн ээлжийн оноог тэглэж, дэлгэцэнд харуулна
+    roundScore = 0;
+    document.getElementById("current-" + activePlayer).textContent = 0;
 
     // active player-ийн улаан цэгийг шилжүүлнэ
     document.querySelector(".player-0-panel").classList.toggle("active");
@@ -77,21 +84,16 @@ function changeRound() {
 
 }
 
-function refreshScore() {
-
-    // active player-ийн нийт оноог хадгалаад, дэлгэцэнд харуулна
-    scores[activePlayer] += roundScore;
-    document.getElementById("score-" + activePlayer).textContent = scores[activePlayer];
-
-    //active player-ийн ээлжийн оноог тэглэж, дэлгэцэнд харуулна
-    roundScore = 0;
-    document.getElementById("current-" + activePlayer).textContent = roundScore;
-
-}
-
 function resetGame() {
 
+    //Тоглогчийн оноог хадгалах
+    scores = [0, 0];
+
+    //Тоглогчийн ээлжийг хадгалах   
     activePlayer = 0;
+
+    //Тоглогчийн ээжлийн оноог хадгалах
+    roundScore = 0;
 
     //preparing to start
     document.getElementById("score-0").textContent = "0";
@@ -99,6 +101,19 @@ function resetGame() {
 
     document.getElementById("current-0").textContent = "0";
     document.getElementById("current-1").textContent = "0";
+
+
+    //Эхний тоглогчоор active -ыг устгах
+    document.querySelector(".player-0-panel").classList.add("active");
+    document.querySelector(".player-1-panel").classList.remove("active");
+    
+    //Тоглогчдоос winner    class устгах
+    document.querySelector(".player-0-panel").classList.remove("winner");
+    document.querySelector(".player-1-panel").classList.remove("winner");
+
+    //Тоглогчдын нэрийг буцааж гаргах
+    document.getElementById("name-0").textContent = "Player 1";
+    document.getElementById("name-1").textContent = "Player 2";
 
     diceDom.style.display = "none";
 
