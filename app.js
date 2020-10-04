@@ -1,4 +1,4 @@
-//Хэний ээлж вэ?
+//Тоглогчийн ээлжийг хадгална
 var activePlayer;
 
 //Ээжлийн оноо
@@ -10,32 +10,39 @@ var scores;
 //dice object in DOM ()
 var diceDom = document.querySelector(".dice");
 
+//ТОглоом дууссан төлвийг хадгална
+var isGameOver;
+
 //ТОглоомыг эхлүүлнэ
 resetGame();
 
 
 document.querySelector(".btn-roll").addEventListener("click", function () {
 
-    //Шооны аль талаараа буусныг хадгалах
-    var diceNumber = Math.floor(Math.random() * 6 + 1);
+    if (!isGameOver) {
 
-    //Шооны зургийг вэб дээр гаргаж ирэх
-    diceDom.style.display = "block";
+        //Шооны аль талаараа буусныг хадгалах
+        var diceNumber = Math.floor(Math.random() * 6 + 1);
 
-    //Буусан санамсаргүй тоонд харгалзах шооны зургийг харуулна
-    diceDom.src = "dice-" + diceNumber + ".png";
+        //Шооны зургийг вэб дээр гаргаж ирэх
+        diceDom.style.display = "block";
 
-    //буусан тоо нь 1-с ялгаатай бол идэвхитэй тоглогчийн ээлжийн оноог нэмэгдүүлнэ.
-    if (diceNumber != 1) {
+        //Буусан санамсаргүй тоонд харгалзах шооны зургийг харуулна
+        diceDom.src = "dice-" + diceNumber + ".png";
 
-        //1-с ялгаатай буусан тул ээлжийн оноог нэмэгдүүлнэ
-        roundScore += diceNumber;
-        document.getElementById("current-" + activePlayer).textContent = roundScore;
+        //буусан тоо нь 1-с ялгаатай бол идэвхитэй тоглогчийн ээлжийн оноог нэмэгдүүлнэ.
+        if (diceNumber != 1) {
 
-    } else {
-        //ээлжийг сольно
-        switchToNextPlayer();
-    }
+            //1-с ялгаатай буусан тул ээлжийн оноог нэмэгдүүлнэ
+            roundScore += diceNumber;
+            document.getElementById("current-" + activePlayer).textContent = roundScore;
+
+        } else {
+            //ээлжийг сольно
+            switchToNextPlayer();
+        }
+    } else
+        alert("Тоглоом дууссан байна. + NEW GAME товчийг дарж эхлүүлнэ үү.");
 
     console.log(diceNumber);
 
@@ -48,12 +55,17 @@ document.querySelector(".btn-hold").addEventListener("click", function () {
     document.getElementById("score-" + activePlayer).textContent = scores[activePlayer];
 
     //Тоглогч хожсон эсэхийг шалгах
-    if (scores[activePlayer] >= 100) {
+    if (scores[activePlayer] >= 50) {
 
         diceDom.style.display = "none";
         document.getElementById("name-" + activePlayer).textContent = " WON !!!!";
         document.querySelector(".player-" + activePlayer + "-panel").classList.add("winner");
         document.querySelector(".player-" + activePlayer + "-panel").classList.remove("active");
+        document.getElementById("current-" + activePlayer).textContent = 0;
+
+        //тоглоом дууссан
+        isGameOver = true;
+
     } else
         switchToNextPlayer();
 
@@ -62,7 +74,7 @@ document.querySelector(".btn-hold").addEventListener("click", function () {
 document.querySelector(".btn-new").addEventListener("click", function () {
 
     resetGame();
-    
+
 });
 
 //тогло ээлжийг дараагийн тоглогч руу шилжүүлнэ
@@ -95,6 +107,9 @@ function resetGame() {
     //Тоглогчийн ээжлийн оноог хадгалах
     roundScore = 0;
 
+    //Тоглоом дуусаагүй болгох
+    isGameOver = false;
+
     //preparing to start
     document.getElementById("score-0").textContent = "0";
     document.getElementById("score-1").textContent = "0";
@@ -106,7 +121,7 @@ function resetGame() {
     //Эхний тоглогчоор active -ыг устгах
     document.querySelector(".player-0-panel").classList.add("active");
     document.querySelector(".player-1-panel").classList.remove("active");
-    
+
     //Тоглогчдоос winner    class устгах
     document.querySelector(".player-0-panel").classList.remove("winner");
     document.querySelector(".player-1-panel").classList.remove("winner");
